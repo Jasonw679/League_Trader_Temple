@@ -1,0 +1,37 @@
+
+.search-form {
+  width: min(420px, 100%);
+  
+}
+
+  .search-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #d6deea;
+    font-size: 0.9rem;
+  }
+
+.search-row {
+  display: flex;
+  gap: 8px;
+}
+
+  .search-row input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid #40516a;
+    border-radius: 6px;
+    background: #111926;
+    color: #f7fafc;
+    padding: 10px 12px;
+  }
+
+  .search-row button {
+    border: 0;
+    border-radius: 6px;
+    background: #d4a94f;
+    color: #14110b;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 10px 14px;
+  }

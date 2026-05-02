@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="league_trader_temple.client/league_trader_temple.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="League_Trader_Temple.Server/League_Trader_Temple.Server.csproj" />
+</Solution>

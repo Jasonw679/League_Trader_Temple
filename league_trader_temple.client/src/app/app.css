@@ -1,0 +1,88 @@
+.card-browser {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.browser-toolbar {
+  display: flex;
+  gap: 24px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.result-count,
+.card-code,
+.domain-list {
+  margin: 0;
+  color: #9fb0c7;
+  font-size: 0.85rem;
+}
+
+h1 {
+  margin: 4px 0 8px;
+  color: #f7fafc;
+  font-size: 2.4rem;
+}
+
+.status-text,
+.error-text {
+  margin: 16px 0;
+  color: #f7fafc;
+}
+
+.error-text {
+  color: #ffb7b7;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.riftbound-card {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: #101823;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.riftbound-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 744 / 1039;
+  object-fit: cover;
+  background: #05080d;
+}
+
+.card-copy {
+  padding: 12px;
+}
+
+.card-copy h2 {
+  margin: 4px 0 6px;
+  color: #f7fafc;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.card-copy p {
+  color: #c8d2df;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .browser-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}

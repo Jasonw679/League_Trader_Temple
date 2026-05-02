@@ -1,0 +1,27 @@
+<app-header></app-header>
+<main class="card-browser">
+  <section class="browser-toolbar" aria-labelledby="card-browser-title">
+    <div>
+      <h1 id="card-browser-title">Top Cards</h1>
+      <p class="result-count">{{ totalCards() }} cards available</p>
+    </div>
+  </section>
+
+  <p *ngIf="isLoadingCards()" class="status-text">Loading cards...</p>
+  <p *ngIf="cardLoadError()" class="error-text">{{ cardLoadError() }}</p>
+
+  <section class="card-grid" aria-label="Riftbound cards">
+    <article *ngFor="let card of cards()" class="riftbound-card">
+      <img [src]="card.media.imageUrl" [alt]="card.media.accessibilityText || card.name" />
+      <div class="card-copy">
+        <p class="card-code">{{ card.publicCode || card.riftboundId.toUpperCase() }}</p>
+        <h2>{{ card.name }}</h2>
+        <p>{{ card.classification.rarity }} {{ card.classification.type }}</p>
+        <p *ngIf="card.classification.domain.length" class="domain-list">
+          {{ card.classification.domain.join(', ') }}
+        </p>
+      </div>
+    </article>
+  </section>
+</main>
+<app-footer></app-footer>
