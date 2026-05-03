@@ -1,5 +1,4 @@
-import { Component, signal } from '@angular/core';
-import { App } from '../app';
+import { Component, signal, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -9,11 +8,12 @@ import { App } from '../app';
 })
 export class Header {
   public readonly searchTerm = signal('');
+  @Output() search = new EventEmitter<string>();
   public onSearchInput(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
   public searchCards(): void {
-    (App as any).loadCards(this.searchTerm());
+    this.search.emit(this.searchTerm());
   }
 }

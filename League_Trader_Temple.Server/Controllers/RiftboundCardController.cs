@@ -46,7 +46,7 @@ namespace League_Trader_Temple.Server.Controllers
                 return BadRequest("Dir must be 1 for ascending or -1 for descending.");
             }
 
-            var path = string.IsNullOrWhiteSpace(search) ? "cards" : "cards/search";
+            var path = string.IsNullOrWhiteSpace(search) ? "cards" : "cards/name";
             var query = new Dictionary<string, string?>
             {
                 ["page"] = page.ToString(),
@@ -57,7 +57,7 @@ namespace League_Trader_Temple.Server.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query["query"] = search.Trim();
+                query["fuzzy"] = search.Trim();
             }
 
             if (!string.IsNullOrWhiteSpace(setId))

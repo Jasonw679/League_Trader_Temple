@@ -37,30 +37,64 @@ h1 {
   color: #ffb7b7;
 }
 
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+.card-horizontal {
+  display: flex;
   gap: 18px;
+  align-items: start;
+  padding: 12px;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.card-horizontal::-webkit-scrollbar {
+  height: 10px;
+}
+.card-horizontal::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+.card-horizontal::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .riftbound-card {
+  flex: 0 0 300px;
+  min-width: 260px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  background: #101823;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  background: #0f1620;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  scroll-snap-align: start;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.riftbound-card:focus,
+.riftbound-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.38);
+  outline: none;
 }
 
 .riftbound-card img {
   display: block;
   width: 100%;
-  aspect-ratio: 744 / 1039;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   background: #05080d;
 }
 
 .card-copy {
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
 }
 
 .card-copy h2 {
@@ -74,6 +108,7 @@ h1 {
   color: #c8d2df;
   font-size: 0.9rem;
   line-height: 1.35;
+  margin: 0;
 }
 
 @media (max-width: 720px) {
@@ -84,5 +119,19 @@ h1 {
 
   h1 {
     font-size: 2rem;
+  }
+
+  .card-horizontal {
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .riftbound-card {
+    flex: 0 0 240px;
+    min-width: 220px;
+  }
+
+  .riftbound-card img {
+    height: auto;
   }
 }

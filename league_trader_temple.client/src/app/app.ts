@@ -55,8 +55,7 @@ export interface RiftboundCardMedia {
 export class App implements OnInit {
   public readonly cards = signal<RiftboundCard[]>([]);
   public readonly cardLoadError = signal('');
-  public readonly isLoadingCards = signal(false);
-  public readonly totalCards = signal(0);
+  public readonly isLoadingCards = signal(false)
 
   constructor(private http: HttpClient) {}
 
@@ -67,15 +66,13 @@ export class App implements OnInit {
   }
 
   public loadCards(search = ''): void {
-    const trimmedSearch = search.trim();
     const params: Record<string, string | number> = {
-      size: 24,
-      sort: 'collector_number',
-      setId: 'ogn'
+      size: 7,
+      sort: 'collector_number'
     };
 
-    if (trimmedSearch) {
-      params['search'] = trimmedSearch;
+    if (search) {
+      params['search'] = search;
     }
 
     this.isLoadingCards.set(true);
@@ -84,12 +81,10 @@ export class App implements OnInit {
     this.http.get<RiftboundCardPage>('/riftboundcards', { params }).subscribe({
       next: (page) => {
         this.cards.set(page.items);
-        this.totalCards.set(page.total);
         this.isLoadingCards.set(false);
       },
       error: () => {
         this.cards.set([]);
-        this.totalCards.set(0);
         this.cardLoadError.set('Unable to load Riftbound cards right now.');
         this.isLoadingCards.set(false);
       }
