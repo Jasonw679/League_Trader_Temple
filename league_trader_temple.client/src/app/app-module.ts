@@ -9,9 +9,10 @@ import { Footer } from './footer/footer';
 import { Card } from './card/card';
 import { Home } from './home/home';
 import { Search } from './search/search';
+import { NotFound } from './not-found/not-found';
 
 @NgModule({
-  declarations: [App, Header, Footer, Card, Home, Search],
+  declarations: [App, Header, Footer, Card, Home, Search, NotFound],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
