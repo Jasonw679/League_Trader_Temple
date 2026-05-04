@@ -1,0 +1,81 @@
+.browser-toolbar {
+  display: flex;
+  gap: 24px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.result-count,
+.card-code,
+.domain-list {
+  margin: 0;
+  color: #9fb0c7;
+  font-size: 0.85rem;
+}
+
+h1 {
+  margin: 4px 0 8px;
+  color: #f7fafc;
+  font-size: 2.4rem;
+}
+
+.status-text,
+.error-text {
+  margin: 16px 0;
+  color: #f7fafc;
+}
+
+.error-text {
+  color: #ffb7b7;
+}
+
+.card-horizontal {
+  display: flex;
+  gap: 18px;
+  align-items: start;
+  padding: 12px;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+  .card-horizontal::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .card-horizontal::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .card-horizontal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+@media (max-width: 720px) {
+  .browser-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .card-horizontal {
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .riftbound-card {
+    flex: 0 0 240px;
+    min-width: 220px;
+  }
+
+    .riftbound-card img {
+      height: auto;
+    }
+}

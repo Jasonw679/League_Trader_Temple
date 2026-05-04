@@ -1,0 +1,7 @@
+.card-grid {
+  display: flex;
+  gap: 18px;
+  align-items: start;
+  padding: 12px;
+  width: 100%;
+}
