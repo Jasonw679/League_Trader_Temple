@@ -1,7 +1,12 @@
 .card-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 18px;
   align-items: start;
   padding: 12px;
   width: 100%;
+}
+
+.card-grid > * {
+  flex: 0 0 300px; /* fixed width */
 }

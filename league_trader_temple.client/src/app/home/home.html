@@ -9,18 +9,9 @@
   <p *ngIf="cardLoadError()" class="error-text">{{ cardLoadError() }}</p>
 
   <section class="card-horizontal" aria-label="Riftbound cards">
-    <article *ngFor="let card of cards()" class="riftbound-card">
-      <img [src]="card.media.imageUrl" [alt]="card.media.accessibilityText || card.name" />
-      <div class="card-copy">
-        <p class="card-code">{{ card.publicCode || card.riftboundId.toUpperCase() }}</p>
-        <h2>{{ card.name }}</h2>
-        <p>{{ card.classification.rarity }} {{ card.classification.type }}</p>
-        <p *ngIf="card.classification.domain.length" class="domain-list">
-          {{ card.classification.domain.join(', ') }}
-        </p>
-        <p>$0.00</p>
-      </div>
-    </article>
+    <span *ngFor="let card of cards()">
+      <app-card [card]="card"></app-card>
+    </span>
   </section>
 </main>
 

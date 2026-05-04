@@ -12,7 +12,7 @@ import { Search } from './search/search';
 import { NotFound } from './not-found/not-found';
 
 @NgModule({
-  declarations: [App, Header, Footer, Card, Home, Search, NotFound],
+  declarations: [App, Header, Footer, Home, Search, Card, NotFound],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],

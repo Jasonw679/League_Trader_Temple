@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, NgModule } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RiftboundCard, RiftboundCardPage } from '../app';
 

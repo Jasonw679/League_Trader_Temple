@@ -1,4 +1,5 @@
-import { Component} from '@angular/core';
+import { Component, Input} from '@angular/core';
+import { RiftboundCard } from '../app'
 
 @Component({
   selector: 'app-card',
@@ -6,6 +7,7 @@ import { Component} from '@angular/core';
   templateUrl: './card.html',
   styleUrl: './card.css',
 })
+
 export class Card {
-  
+  @Input() card!: RiftboundCard;
 }
