@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, signal, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
+import { Router } from '@angular/router';
 
 export interface RiftboundCardPage {
   items: RiftboundCard[];
@@ -45,49 +45,16 @@ export interface RiftboundCardMedia {
   artist: string;
   accessibilityText: string;
 }
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   standalone: false,
   styleUrl: './app.css'
 })
-export class App implements OnInit {
-  public readonly cards = signal<RiftboundCard[]>([]);
-  public readonly cardLoadError = signal('');
-  public readonly isLoadingCards = signal(false)
+export class App{
+  constructor(private router: Router) {}
 
-  constructor(private http: HttpClient) {}
-
-  protected readonly title = signal('league_trader_temple.client');
-
-  public ngOnInit(): void {
-    this.loadCards();
-  }
-
-  public loadCards(search = ''): void {
-    const params: Record<string, string | number> = {
-      size: 7,
-      sort: 'collector_number'
-    };
-
-    if (search) {
-      params['search'] = search;
-    }
-
-    this.isLoadingCards.set(true);
-    this.cardLoadError.set('');
-
-    this.http.get<RiftboundCardPage>('/riftboundcards', { params }).subscribe({
-      next: (page) => {
-        this.cards.set(page.items);
-        this.isLoadingCards.set(false);
-      },
-      error: () => {
-        this.cards.set([]);
-        this.cardLoadError.set('Unable to load Riftbound cards right now.');
-        this.isLoadingCards.set(false);
-      }
-    });
+  loadCards(search = ''): void {
+    this.router.navigate(['search'], { queryParams: { search } });
   }
 }

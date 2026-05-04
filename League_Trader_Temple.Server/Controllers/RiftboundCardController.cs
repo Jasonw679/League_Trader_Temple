@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace League_Trader_Temple.Server.Controllers

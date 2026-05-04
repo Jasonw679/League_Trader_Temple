@@ -6,9 +6,12 @@ import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
+import { Card } from './card/card';
+import { Home } from './home/home';
+import { Search } from './search/search';
 
 @NgModule({
-  declarations: [App, Header, Footer],
+  declarations: [App, Header, Footer, Card, Home, Search],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],

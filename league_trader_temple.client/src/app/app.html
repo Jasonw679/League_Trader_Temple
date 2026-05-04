@@ -1,27 +1,3 @@
 <app-header (search)="loadCards($event)"></app-header>
-<main class="card-browser">
-  <section class="browser-toolbar" aria-labelledby="card-browser-title">
-    <div>
-      <h1 id="card-browser-title">Top Cards</h1>
-    </div>
-  </section>
-
-  <p *ngIf="isLoadingCards()" class="status-text">Loading cards...</p>
-  <p *ngIf="cardLoadError()" class="error-text">{{ cardLoadError() }}</p>
-
-  <section class="card-horizontal" aria-label="Riftbound cards">
-    <article *ngFor="let card of cards()" class="riftbound-card">
-      <img [src]="card.media.imageUrl" [alt]="card.media.accessibilityText || card.name" />
-      <div class="card-copy">
-        <p class="card-code">{{ card.publicCode || card.riftboundId.toUpperCase() }}</p>
-        <h2>{{ card.name }}</h2>
-        <p>{{ card.classification.rarity }} {{ card.classification.type }}</p>
-        <p *ngIf="card.classification.domain.length" class="domain-list">
-          {{ card.classification.domain.join(', ') }}
-        </p>
-        <p>$0.00</p>
-      </div>
-    </article>
-  </section>
-</main>
+<router-outlet></router-outlet>
 <app-footer></app-footer>
