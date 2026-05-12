@@ -22,7 +22,6 @@ export class Search implements OnInit {
 
   public loadCards(search = ''): void {
     const params: Record<string, string | number> = {
-      size: 10,
       sort: 'collector_number'
     };
 

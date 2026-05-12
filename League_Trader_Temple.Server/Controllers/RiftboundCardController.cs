@@ -23,6 +23,7 @@ namespace League_Trader_Temple.Server.Controllers
         [HttpGet(Name = "GetRiftboundCards")]
         public async Task<ActionResult<RiftboundCardPage>> Get(
             [FromQuery] string? search = null,
+            [FromQuery] string? id = null,
             [FromQuery] string? setId = null,
             [FromQuery] int page = 1,
             [FromQuery] int size = 6,
@@ -45,7 +46,8 @@ namespace League_Trader_Temple.Server.Controllers
                 return BadRequest("Dir must be 1 for ascending or -1 for descending.");
             }
 
-            var path = string.IsNullOrWhiteSpace(search) ? "cards" : "cards/name";
+            var isSingleCardRequest = !string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(search);
+            var path = string.IsNullOrWhiteSpace(search) ? string.IsNullOrWhiteSpace(id) ? "cards" : $"cards/{id}" : "cards/name";
             var query = new Dictionary<string, string?>
             {
                 ["page"] = page.ToString(),
@@ -67,12 +69,30 @@ namespace League_Trader_Temple.Server.Controllers
             var requestUri = BuildUri(path, query);
             var client = httpClientFactory.CreateClient("Riftcodex");
             using var response = await client.GetAsync(requestUri, cancellationToken);
-
+            
             if (!response.IsSuccessStatusCode)
             {
                 return StatusCode(
                     (int)response.StatusCode,
                     "Unable to load Riftbound cards from Riftcodex right now.");
+            }
+
+            if (isSingleCardRequest)
+            {
+                var card = await response.Content.ReadFromJsonAsync<RiftboundCard>(
+                    RiftcodexJsonOptions,
+                    cancellationToken);
+
+                return card is null
+                    ? StatusCode(StatusCodes.Status502BadGateway, "Riftcodex returned an empty response.")
+                    : Ok(new RiftboundCardPage
+                    {
+                        Items = [card],
+                        Total = 1,
+                        Page = 1,
+                        Size = 1,
+                        Pages = 1
+                    });
             }
 
             var cardPage = await response.Content.ReadFromJsonAsync<RiftboundCardPage>(

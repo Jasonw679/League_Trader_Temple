@@ -1,0 +1,55 @@
+<main class="card-product-page">
+  <p *ngIf="loading()" class="status-text">Loading card...</p>
+  <p *ngIf="error" class="error-text">{{ error }}</p>
+
+  <section *ngIf="product() as p" class="card-product" aria-label="Card details">
+    <div class="card-image-panel">
+      <img
+        *ngIf="p.media.imageUrl"
+        [src]="p.media.imageUrl"
+        [alt]="p.media.accessibilityText || p.name"
+      />
+    </div>
+
+    <div class="card-info-panel">
+      <p class="card-code">{{ p.publicCode || p.riftboundId.toUpperCase() }}</p>
+      <h1>{{ p.name }}</h1>
+
+      <dl class="card-details">
+        <div>
+          <dt>Type</dt>
+          <dd>{{ p.classification.rarity }} {{ p.classification.type }}</dd>
+        </div>
+        <div *ngIf="p.classification.supertype">
+          <dt>Supertype</dt>
+          <dd>{{ p.classification.supertype }}</dd>
+        </div>
+        <div *ngIf="p.classification.domain.length">
+          <dt>Domain</dt>
+          <dd>{{ p.classification.domain.join(', ') }}</dd>
+        </div>
+        <div>
+          <dt>Set</dt>
+          <dd>{{ p.set.label }}</dd>
+        </div>
+        <div>
+          <dt>Collector</dt>
+          <dd>#{{ p.collectorNumber }}</dd>
+        </div>
+        <div *ngIf="p.media.artist">
+          <dt>Artist</dt>
+          <dd>{{ p.media.artist }}</dd>
+        </div>
+      </dl>
+
+      <div class="stat-list">
+        <span *ngIf="p.attributes.energy !== null && p.attributes.energy !== undefined">Energy {{ p.attributes.energy }}</span>
+        <span *ngIf="p.attributes.might !== null && p.attributes.might !== undefined">Might {{ p.attributes.might }}</span>
+        <span *ngIf="p.attributes.power !== null && p.attributes.power !== undefined">Power {{ p.attributes.power }}</span>
+      </div>
+
+      <p *ngIf="p.text?.plain" class="rules-text">{{ p.text?.plain }}</p>
+      <p *ngIf="p.text?.flavour" class="flavour-text">{{ p.text?.flavour }}</p>
+    </div>
+  </section>
+</main>

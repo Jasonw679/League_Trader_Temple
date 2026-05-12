@@ -1,4 +1,4 @@
-<article class="riftbound-card">
+<article class="riftbound-card" [routerLink]="['/card', card.id]">
   <img [src]="card.media.imageUrl" [alt]="card.media.accessibilityText || card.name" />
   <div class="card-copy">
     <p class="card-code">{{ card.publicCode || card.riftboundId.toUpperCase() }}</p>

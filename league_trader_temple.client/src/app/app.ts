@@ -17,6 +17,7 @@ export interface RiftboundCard {
   collectorNumber: number;
   classification: RiftboundCardClassification;
   attributes: RiftboundCardAttributes;
+  text?: RiftboundCardText;
   set: RiftboundCardSet;
   media: RiftboundCardMedia;
 }
@@ -44,6 +45,12 @@ export interface RiftboundCardMedia {
   imageUrl: string;
   artist: string;
   accessibilityText: string;
+}
+
+export interface RiftboundCardText {
+  rich: string;
+  plain: string;
+  flavour?: string | null;
 }
 @Component({
   selector: 'app-root',

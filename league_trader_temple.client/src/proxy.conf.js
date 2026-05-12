@@ -16,7 +16,7 @@ function firstDefinedUrl() {
     return `http://localhost:${httpPort}`;
   }
 
-  return 'https://localhost:7210';
+  return 'http://localhost:5248';
 }
 
 const target = firstDefinedUrl();

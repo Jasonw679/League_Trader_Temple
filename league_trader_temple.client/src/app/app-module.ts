@@ -10,9 +10,10 @@ import { Card } from './card/card';
 import { Home } from './home/home';
 import { Search } from './search/search';
 import { NotFound } from './not-found/not-found';
+import { CardProduct } from './card-product/card-product';
 
 @NgModule({
-  declarations: [App, Header, Footer, Home, Search, Card, NotFound],
+  declarations: [App, Header, Footer, Home, Search, Card, NotFound, CardProduct],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
