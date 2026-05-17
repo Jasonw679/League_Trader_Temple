@@ -20,11 +20,11 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore .NET dependencies
-        working-directory: league_trader_temple.server
+        working-directory: league_trader_temple.Server
         run: dotnet restore
 
       - name: Build .NET backend
-        working-directory: league_trader_temple.server
+        working-directory: league_trader_temple.Server
         run: dotnet build --configuration Release --no-restore
 
       - name: Restore .NET dependencies
