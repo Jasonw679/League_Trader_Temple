@@ -12,7 +12,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: league-trader-temple.client
+        working-directory: league_trader_temple.client
         
     steps:
       - name: Checkout repository
@@ -35,7 +35,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          publish-dir: ./league-trader-temple.client/dist/league-trader-temple.client/browser
+          publish-dir: ./league-trader-temple.client/dist/league_trader_temple.client/browser
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
