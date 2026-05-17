@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore
 
       - name: Build .NET backend
-        working-directory: league_trader_temple.Server
+        working-directory: League_Trader_Temple.Server
         run: dotnet build --configuration Release --no-restore
 
       - name: Restore .NET dependencies
