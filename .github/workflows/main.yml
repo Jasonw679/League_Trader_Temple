@@ -1,7 +1,6 @@
 name: Deploy to Netlify
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -21,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6.4.0
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Install dependencies
         run: npm install
@@ -35,7 +34,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          publish-dir: ./league-trader-temple.client/dist/league_trader_temple.client/browser
+          publish-dir: ./dist/league_trader_temple.client/browser
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
