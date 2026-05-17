@@ -11,9 +11,10 @@ import { Home } from './home/home';
 import { Search } from './search/search';
 import { NotFound } from './not-found/not-found';
 import { CardProduct } from './card-product/card-product';
+import { ShoppingCart } from './shopping-cart/shopping-cart';
 
 @NgModule({
-  declarations: [App, Header, Footer, Home, Search, Card, NotFound, CardProduct],
+  declarations: [App, Header, Footer, Home, Search, Card, NotFound, CardProduct, ShoppingCart],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
