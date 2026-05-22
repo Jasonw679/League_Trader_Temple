@@ -9,30 +9,51 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: league-trader-temple.client
         
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
 
+      - name: Restore .NET dependencies
+        working-directory: League_Trader_Temple.Server
+        run: dotnet restore
+
+      - name: Build .NET backend
+        working-directory: League_Trader_Temple.Server
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      - name: Build .NET backend
+        run: dotnet build --configuration Release --no-restore
+        
       - name: Setup Node.js
         uses: actions/setup-node@v6.4.0
         with:
           node-version: 24
 
       - name: Install dependencies
+        working-directory: league_trader_temple.client
         run: npm install
 
+      - name: Install Angular CLI
+        working-directory: league_trader_temple.client
+        run: npm install -g @angular/cli
+
       - name: Build project
+        working-directory: league_trader_temple.client
         run: npm run build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          publish-dir: ./league-trader-temple.client/dist/league-trader-temple.client/browser
+          publish-dir: ./league_trader_temple.client/dist/league_trader_temple.client/browser
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
