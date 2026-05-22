@@ -8,12 +8,15 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.angular
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
+**/*.log
 **/azds.yaml
 **/bin
 **/charts
+**/dist
 **/docker-compose*
 **/Dockerfile*
 **/node_modules

@@ -1,38 +1,41 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Build the Angular client first so the published ASP.NET image can serve it from wwwroot.
+FROM node:24-bookworm-slim AS client-build
+WORKDIR /src/league_trader_temple.client
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+COPY league_trader_temple.client/package*.json ./
+RUN npm ci --no-audit --no-fund
 
+COPY league_trader_temple.client/ ./
+RUN npm run build
 
-# This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS with-node
-RUN apt-get update
-RUN apt-get install curl
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
-RUN apt-get -y install nodejs
-RUN npm install -g @angular/cli
-
-FROM with-node AS build
+# Restore and publish the ASP.NET Core server.
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS server-build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["League_Trader_Temple.Server/League_Trader_Temple.Server.csproj", "League_Trader_Temple.Server/"]
-COPY ["league_trader_temple.client/league_trader_temple.client.esproj", "league_trader_temple.client/"]
-RUN dotnet restore "./League_Trader_Temple.Server/League_Trader_Temple.Server.csproj"
-COPY . .
-WORKDIR "/src/League_Trader_Temple.Server"
-RUN dotnet build "./League_Trader_Temple.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./League_Trader_Temple.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+COPY League_Trader_Temple.Server/League_Trader_Temple.Server.csproj League_Trader_Temple.Server/
+COPY league_trader_temple.client/league_trader_temple.client.esproj league_trader_temple.client/
+RUN dotnet restore League_Trader_Temple.Server/League_Trader_Temple.Server.csproj /p:BuildingInsideDocker=true
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
-FROM base AS final
+COPY . ./
+COPY --from=client-build /src/league_trader_temple.client/dist/league_trader_temple.client/browser/ League_Trader_Temple.Server/wwwroot/
+
+WORKDIR /src/League_Trader_Temple.Server
+RUN dotnet publish League_Trader_Temple.Server.csproj \
+    --configuration $BUILD_CONFIGURATION \
+    --output /app/publish \
+    --no-restore \
+    /p:UseAppHost=false \
+    /p:BuildingInsideDocker=true
+
+# Run the published app on the smaller ASP.NET runtime image.
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
+
+COPY --from=server-build /app/publish ./
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "League_Trader_Temple.Server.dll"]
