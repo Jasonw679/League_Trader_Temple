@@ -8,8 +8,6 @@ namespace League_Trader_Temple.Server
 
         public string RiftboundId { get; set; } = "";
 
-        public string? TcgplayerId { get; set; }
-
         public string PublicCode { get; set; } = "";
 
         public int CollectorNumber { get; set; }

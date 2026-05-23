@@ -1,24 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace League_Trader_Temple.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RiftboundCardsController : ControllerBase
+    public class RiftboundCardsController(CardDatabase cardDatabase) : ControllerBase
     {
-        private static readonly JsonSerializerOptions RiftcodexJsonOptions = new()
-        {
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
-        };
-
-        private readonly IHttpClientFactory httpClientFactory;
-
-        public RiftboundCardsController(IHttpClientFactory httpClientFactory)
-        {
-            this.httpClientFactory = httpClientFactory;
-        }
+        private readonly CardDatabase cardDatabase = cardDatabase;
 
         [HttpGet(Name = "GetRiftboundCards")]
         public async Task<ActionResult<RiftboundCardPage>> Get(
@@ -46,74 +34,17 @@ namespace League_Trader_Temple.Server.Controllers
                 return BadRequest("Dir must be 1 for ascending or -1 for descending.");
             }
 
-            var isSingleCardRequest = !string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(search);
-            var path = string.IsNullOrWhiteSpace(search) ? string.IsNullOrWhiteSpace(id) ? "cards" : $"cards/{id}" : "cards/name";
-            var query = new Dictionary<string, string?>
-            {
-                ["page"] = page.ToString(),
-                ["size"] = size.ToString(),
-                ["sort"] = sort,
-                ["dir"] = dir.ToString()
-            };
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query["fuzzy"] = search.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(setId))
-            {
-                query["set_id"] = setId.Trim();
-            }
-
-            var requestUri = BuildUri(path, query);
-            var client = httpClientFactory.CreateClient("Riftcodex");
-            using var response = await client.GetAsync(requestUri, cancellationToken);
-            
-            if (!response.IsSuccessStatusCode)
-            {
-                return StatusCode(
-                    (int)response.StatusCode,
-                    "Unable to load Riftbound cards from Riftcodex right now.");
-            }
-
-            if (isSingleCardRequest)
-            {
-                var card = await response.Content.ReadFromJsonAsync<RiftboundCard>(
-                    RiftcodexJsonOptions,
-                    cancellationToken);
-
-                return card is null
-                    ? StatusCode(StatusCodes.Status502BadGateway, "Riftcodex returned an empty response.")
-                    : Ok(new RiftboundCardPage
-                    {
-                        Items = [card],
-                        Total = 1,
-                        Page = 1,
-                        Size = 1,
-                        Pages = 1
-                    });
-            }
-
-            var cardPage = await response.Content.ReadFromJsonAsync<RiftboundCardPage>(
-                RiftcodexJsonOptions,
+            var cardPage = await cardDatabase.GetCardsAsync(
+                search,
+                id,
+                setId,
+                page,
+                size,
+                sort,
+                dir,
                 cancellationToken);
 
-            return cardPage is null
-                ? StatusCode(StatusCodes.Status502BadGateway, "Riftcodex returned an empty response.")
-                : Ok(cardPage);
-        }
-
-        private static string BuildUri(string path, Dictionary<string, string?> query)
-        {
-            var queryString = string.Join(
-                "&",
-                query
-                    .Where(item => !string.IsNullOrWhiteSpace(item.Value))
-                    .Select(item =>
-                        $"{Uri.EscapeDataString(item.Key)}={Uri.EscapeDataString(item.Value!)}"));
-
-            return string.IsNullOrEmpty(queryString) ? path : $"{path}?{queryString}";
+            return Ok(cardPage);
         }
     }
 }
