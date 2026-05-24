@@ -4,7 +4,7 @@ using NpgsqlTypes;
 
 namespace League_Trader_Temple.Server;
 
-public sealed class CardDatabase(NpgsqlDataSource dataSource)
+public class CardDatabase(NpgsqlDataSource dataSource)
 {
     private static readonly JsonSerializerOptions CardJsonOptions = new(JsonSerializerDefaults.Web)
     {

@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace League_Trader_Temple.Server;
 
-public sealed class RiftcodexCardSyncService(
+public class RiftcodexCardSyncService(
     CardDatabase cardDatabase,
     IHttpClientFactory httpClientFactory,
     ILogger<RiftcodexCardSyncService> logger) : IHostedService
