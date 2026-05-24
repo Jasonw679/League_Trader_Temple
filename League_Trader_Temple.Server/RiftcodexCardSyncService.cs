@@ -4,10 +4,10 @@ namespace League_Trader_Temple.Server;
 
 public class RiftcodexCardSyncService(
     CardDatabase cardDatabase,
-    IHttpClientFactory httpClientFactory,
     ILogger<RiftcodexCardSyncService> logger) : IHostedService
 {
-    private const int PageSize = 100;
+
+    private const string CardFilePath = "cards.json";
 
     private static readonly JsonSerializerOptions RiftcodexJsonOptions = new()
     {
@@ -16,44 +16,33 @@ public class RiftcodexCardSyncService(
     };
 
     private readonly CardDatabase cardDatabase = cardDatabase;
-    private readonly IHttpClientFactory httpClientFactory = httpClientFactory;
     private readonly ILogger<RiftcodexCardSyncService> logger = logger;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await cardDatabase.EnsureCreatedAsync(cancellationToken);
 
-        var client = httpClientFactory.CreateClient("Riftcodex");
-        var firstPage = await GetPageAsync(client, 1, cancellationToken);
-        await cardDatabase.UpsertCardsAsync(firstPage.Items, cancellationToken);
-
-        var syncedCards = firstPage.Items.Length;
-        for (var page = 2; page <= firstPage.Pages; page++)
+        if (!File.Exists(CardFilePath))
         {
-            var cardPage = await GetPageAsync(client, page, cancellationToken);
-            await cardDatabase.UpsertCardsAsync(cardPage.Items, cancellationToken);
-            syncedCards += cardPage.Items.Length;
+            throw new FileNotFoundException("cards.json not found", CardFilePath);
         }
+        var json = await File.ReadAllTextAsync(CardFilePath, cancellationToken);
 
-        logger.LogInformation("Synced {CardCount} Riftbound cards from Riftcodex.", syncedCards);
+        var cardPage = JsonSerializer.Deserialize<RiftboundCardPage>(
+            json,
+            RiftcodexJsonOptions
+        ) ?? throw new InvalidOperationException("cards.json deserialization returned null.");
+
+        await cardDatabase.UpsertCardsAsync(cardPage.Items, cancellationToken);
+
+        logger.LogInformation(
+            "Synced {CardCount} Riftbound cards from local cards.json.",
+            cardPage.Items.Length
+        );
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
-    }
-
-    private static async Task<RiftboundCardPage> GetPageAsync(
-        HttpClient client,
-        int page,
-        CancellationToken cancellationToken)
-    {
-        var path = $"cards?page={page}&size={PageSize}&sort=collector_number&dir=1";
-        var cardPage = await client.GetFromJsonAsync<RiftboundCardPage>(
-            path,
-            RiftcodexJsonOptions,
-            cancellationToken);
-
-        return cardPage ?? throw new InvalidOperationException("Riftcodex returned an empty card page.");
     }
 }
