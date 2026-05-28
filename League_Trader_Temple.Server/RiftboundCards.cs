@@ -6,27 +6,27 @@ namespace League_Trader_Temple.Server
 
         public string Name { get; set; } = "";
 
-        public string RiftboundId { get; set; } = "";
-
-        public string PublicCode { get; set; } = "";
+        public string SetId { get; set; } = "";
 
         public int CollectorNumber { get; set; }
 
-        public RiftboundCardAttributes Attributes { get; set; } = new();
+        public string Rarity { get; set; } = "";
 
-        public RiftboundCardClassification Classification { get; set; } = new();
+        public string Faction { get; set; } = "";
 
-        public RiftboundCardText Text { get; set; } = new();
-
-        public RiftboundCardSet Set { get; set; } = new();
-
-        public RiftboundCardMedia Media { get; set; } = new();
-
-        public string[] Tags { get; set; } = [];
+        public string Type { get; set; } = "";
 
         public string Orientation { get; set; } = "";
 
-        public RiftboundCardMetadata Metadata { get; set; } = new();
+        public RiftboundCardStats Stats { get; set; } = new();
+
+        public string Image { get; set; } = "";
+
+        public RiftboundCardImageThumb ImageThumb { get; set; } = new();
+
+        public string ImageBlurDataUrl { get; set; } = "";
+
+        public bool IsBanned { get; set; }
     }
 
     public class RiftboundCardPage
@@ -42,7 +42,7 @@ namespace League_Trader_Temple.Server
         public int Pages { get; set; }
     }
 
-    public class RiftboundCardAttributes
+    public class RiftboundCardStats
     {
         public int? Energy { get; set; }
 
@@ -51,54 +51,12 @@ namespace League_Trader_Temple.Server
         public int? Power { get; set; }
     }
 
-    public class RiftboundCardClassification
+    public class RiftboundCardImageThumb
     {
-        public string Type { get; set; } = "";
+        public string Small { get; set; } = "";
 
-        public string? Supertype { get; set; }
+        public string Medium { get; set; } = "";
 
-        public string Rarity { get; set; } = "";
-
-        public string[] Domain { get; set; } = [];
-    }
-
-    public class RiftboundCardText
-    {
-        public string Rich { get; set; } = "";
-
-        public string Plain { get; set; } = "";
-
-        public string? Flavour { get; set; }
-    }
-
-    public class RiftboundCardSet
-    {
-        public string Id { get; set; } = "";
-
-        public string SetId { get; set; } = "";
-
-        public string Label { get; set; } = "";
-    }
-
-    public class RiftboundCardMedia
-    {
-        public string ImageUrl { get; set; } = "";
-
-        public string Artist { get; set; } = "";
-
-        public string AccessibilityText { get; set; } = "";
-    }
-
-    public class RiftboundCardMetadata
-    {
-        public string CleanName { get; set; } = "";
-
-        public DateTimeOffset? UpdatedOn { get; set; }
-
-        public bool AlternateArt { get; set; }
-
-        public bool Overnumbered { get; set; }
-
-        public bool Signature { get; set; }
+        public string Large { get; set; } = "";
     }
 }

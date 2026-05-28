@@ -1,12 +1,10 @@
 <article class="riftbound-card" [routerLink]="['/card', card.id]">
-  <img [src]="card.media.imageUrl" [alt]="card.media.accessibilityText || card.name" />
+  <img [src]="card.imageThumb.large || card.image" [alt]="card.name" />
   <div class="card-copy">
-    <p class="card-code">{{ card.publicCode || card.riftboundId.toUpperCase() }}</p>
+    <p class="card-code">{{ card.id | uppercase }}</p>
     <h2>{{ card.name }}</h2>
-    <p>{{ card.classification.rarity }} {{ card.classification.type }}</p>
-    <p *ngIf="card.classification.domain.length" class="domain-list">
-      {{ card.classification.domain.join(', ') }}
-    </p>
+    <p>{{ card.rarity | titlecase }} {{ card.type }}</p>
+    <p *ngIf="card.faction" class="domain-list">{{ card.faction | titlecase }}</p>
     <p>Not Available</p>
   </div>
 </article>

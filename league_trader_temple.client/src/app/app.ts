@@ -12,45 +12,29 @@ export interface RiftboundCardPage {
 export interface RiftboundCard {
   id: string;
   name: string;
-  riftboundId: string;
-  publicCode: string;
+  setId: string;
   collectorNumber: number;
-  classification: RiftboundCardClassification;
-  attributes: RiftboundCardAttributes;
-  text?: RiftboundCardText;
-  set: RiftboundCardSet;
-  media: RiftboundCardMedia;
+  rarity: string;
+  faction: string;
+  type: string;
+  orientation: string;
+  stats: RiftboundCardStats;
+  image: string;
+  imageThumb: RiftboundCardImageThumb;
+  imageBlurDataUrl: string;
+  isBanned: boolean;
 }
 
-export interface RiftboundCardAttributes {
+export interface RiftboundCardStats {
   energy?: number | null;
   might?: number | null;
   power?: number | null;
 }
 
-export interface RiftboundCardClassification {
-  type: string;
-  supertype?: string | null;
-  rarity: string;
-  domain: string[];
-}
-
-export interface RiftboundCardSet {
-  id?: string;
-  setId?: string;
-  label: string;
-}
-
-export interface RiftboundCardMedia {
-  imageUrl: string;
-  artist: string;
-  accessibilityText: string;
-}
-
-export interface RiftboundCardText {
-  rich: string;
-  plain: string;
-  flavour?: string | null;
+export interface RiftboundCardImageThumb {
+  small: string;
+  medium: string;
+  large: string;
 }
 @Component({
   selector: 'app-root',

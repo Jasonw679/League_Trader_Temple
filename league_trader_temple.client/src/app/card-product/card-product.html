@@ -5,51 +5,48 @@
   <section *ngIf="product() as p" class="card-product" aria-label="Card details">
     <div class="card-image-panel">
       <img
-        *ngIf="p.media.imageUrl"
-        [src]="p.media.imageUrl"
-        [alt]="p.media.accessibilityText || p.name"
+        *ngIf="p.image"
+        [src]="p.image"
+        [alt]="p.name"
       />
     </div>
 
     <div class="card-info-panel">
-      <p class="card-code">{{ p.publicCode || p.riftboundId.toUpperCase() }}</p>
+      <p class="card-code">{{ p.id | uppercase }}</p>
       <h1>{{ p.name }}</h1>
 
       <dl class="card-details">
         <div>
           <dt>Type</dt>
-          <dd>{{ p.classification.rarity }} {{ p.classification.type }}</dd>
+          <dd>{{ p.rarity | titlecase }} {{ p.type }}</dd>
         </div>
-        <div *ngIf="p.classification.supertype">
-          <dt>Supertype</dt>
-          <dd>{{ p.classification.supertype }}</dd>
+        <div>
+          <dt>Faction</dt>
+          <dd>{{ p.faction | titlecase }}</dd>
         </div>
-        <div *ngIf="p.classification.domain.length">
-          <dt>Domain</dt>
-          <dd>{{ p.classification.domain.join(', ') }}</dd>
+        <div>
+          <dt>Collector Number</dt>
+          <dd>#{{ p.collectorNumber }}</dd>
         </div>
         <div>
           <dt>Set</dt>
-          <dd>{{ p.set.label }}</dd>
+          <dd>{{ p.setId }}</dd>
         </div>
         <div>
-          <dt>Collector</dt>
-          <dd>#{{ p.collectorNumber }}</dd>
+          <dt>Orientation</dt>
+          <dd>{{ p.orientation | titlecase }}</dd>
         </div>
-        <div *ngIf="p.media.artist">
-          <dt>Artist</dt>
-          <dd>{{ p.media.artist }}</dd>
+        <div>
+          <dt>Status</dt>
+          <dd>{{ p.isBanned ? 'Banned' : 'Legal' }}</dd>
         </div>
       </dl>
 
       <div class="stat-list">
-        <span *ngIf="p.attributes.energy !== null && p.attributes.energy !== undefined">Energy {{ p.attributes.energy }}</span>
-        <span *ngIf="p.attributes.might !== null && p.attributes.might !== undefined">Might {{ p.attributes.might }}</span>
-        <span *ngIf="p.attributes.power !== null && p.attributes.power !== undefined">Power {{ p.attributes.power }}</span>
+        <span *ngIf="p.stats.energy !== null && p.stats.energy !== undefined">Energy {{ p.stats.energy }}</span>
+        <span *ngIf="p.stats.might !== null && p.stats.might !== undefined">Might {{ p.stats.might }}</span>
+        <span *ngIf="p.stats.power !== null && p.stats.power !== undefined">Power {{ p.stats.power }}</span>
       </div>
-
-      <p *ngIf="p.text?.plain" class="rules-text">{{ p.text?.plain }}</p>
-      <p *ngIf="p.text?.flavour" class="flavour-text">{{ p.text?.flavour }}</p>
     </div>
   </section>
 </main>

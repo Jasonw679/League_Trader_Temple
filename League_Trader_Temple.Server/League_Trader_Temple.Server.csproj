@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="cards.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\league_trader_temple.client\league_trader_temple.client.esproj" Condition="'$(BuildingInsideDocker)' != 'true'">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

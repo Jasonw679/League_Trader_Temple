@@ -46,6 +46,8 @@ public class CardDatabase(NpgsqlDataSource dataSource)
 
     public async Task UpsertCardsAsync(IEnumerable<RiftboundCard> cards, CancellationToken cancellationToken = default)
     {
+        var cardList = cards.ToArray();
+
         const string sql = """
             INSERT INTO riftbound_cards (
                 id,
@@ -80,19 +82,23 @@ public class CardDatabase(NpgsqlDataSource dataSource)
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
 
-        foreach (var card in cards)
+        foreach (var card in cardList)
         {
             await using var command = new NpgsqlCommand(sql, connection, transaction);
+            var publicCode = GetPublicCode(card);
+
             command.Parameters.AddWithValue("id", card.Id);
             command.Parameters.AddWithValue("name", card.Name);
-            command.Parameters.AddWithValue("riftbound_id", card.RiftboundId);
-            command.Parameters.AddWithValue("public_code", card.PublicCode);
+            command.Parameters.AddWithValue("riftbound_id", card.Id);
+            command.Parameters.AddWithValue("public_code", publicCode);
             command.Parameters.AddWithValue("collector_number", card.CollectorNumber);
-            command.Parameters.AddWithValue("set_id", card.Set.SetId);
+            command.Parameters.AddWithValue("set_id", card.SetId);
             command.Parameters.Add("card", NpgsqlDbType.Jsonb).Value = JsonSerializer.Serialize(card, CardJsonOptions);
 
             await command.ExecuteNonQueryAsync(cancellationToken);
         }
+
+        await DeleteCardsNotInSyncAsync(connection, transaction, cardList, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
     }
@@ -124,14 +130,16 @@ public class CardDatabase(NpgsqlDataSource dataSource)
                     name ILIKE @search
                     OR public_code ILIKE @search
                     OR riftbound_id ILIKE @search
-                    OR card -> 'text' ->> 'plain' ILIKE @search
+                    OR card ->> 'type' ILIKE @search
+                    OR card ->> 'rarity' ILIKE @search
+                    OR card ->> 'faction' ILIKE @search
                 )
                 """);
         }
 
         if (!string.IsNullOrWhiteSpace(setId))
         {
-            filters.Add("set_id = @set_id");
+            filters.Add("lower(set_id) = lower(@set_id)");
         }
 
         var whereClause = filters.Count == 0 ? "" : $"WHERE {string.Join(" AND ", filters)}";
@@ -225,6 +233,27 @@ public class CardDatabase(NpgsqlDataSource dataSource)
         }
     }
 
+    private static async Task DeleteCardsNotInSyncAsync(
+        NpgsqlConnection connection,
+        NpgsqlTransaction transaction,
+        RiftboundCard[] cards,
+        CancellationToken cancellationToken)
+    {
+        if (cards.Length == 0)
+        {
+            return;
+        }
+
+        await using var command = new NpgsqlCommand(
+            "DELETE FROM riftbound_cards WHERE NOT (id = ANY(@ids));",
+            connection,
+            transaction);
+
+        command.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Text).Value =
+            cards.Select(card => card.Id).ToArray();
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
     private static string GetSortColumn(string sort)
     {
         return sort switch
@@ -234,7 +263,15 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             "riftbound_id" => "riftbound_id",
             "set_id" => "set_id",
             "collector_number" => "collector_number",
+            "rarity" => "card ->> 'rarity'",
+            "faction" => "card ->> 'faction'",
+            "type" => "card ->> 'type'",
             _ => "collector_number"
         };
+    }
+
+    private static string GetPublicCode(RiftboundCard card)
+    {
+        return card.Id.ToUpperInvariant();
     }
 }
