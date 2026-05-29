@@ -23,6 +23,7 @@ export interface RiftboundCard {
   imageThumb: RiftboundCardImageThumb;
   imageBlurDataUrl: string;
   isBanned: boolean;
+  visitCount: number;
 }
 
 export interface RiftboundCardStats {

@@ -19,7 +19,6 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             CREATE TABLE IF NOT EXISTS riftbound_cards (
                 id text PRIMARY KEY,
                 name text NOT NULL,
-                riftbound_id text NOT NULL,
                 public_code text NOT NULL,
                 collector_number integer NOT NULL,
                 set_id text NOT NULL,
@@ -38,6 +37,21 @@ public class CardDatabase(NpgsqlDataSource dataSource)
 
             CREATE INDEX IF NOT EXISTS ix_riftbound_cards_collector_number
                 ON riftbound_cards (collector_number);
+
+            CREATE TABLE IF NOT EXISTS riftbound_card_visits (
+                card_id text NOT NULL REFERENCES riftbound_cards (id) ON DELETE CASCADE,
+                user_id text NOT NULL,
+                visit_count integer NOT NULL DEFAULT 0,
+                first_visited_at timestamp with time zone NOT NULL DEFAULT now(),
+                last_visited_at timestamp with time zone NOT NULL DEFAULT now(),
+                PRIMARY KEY (card_id, user_id)
+            );
+
+            CREATE INDEX IF NOT EXISTS ix_riftbound_card_visits_card_id
+                ON riftbound_card_visits (card_id);
+
+            CREATE INDEX IF NOT EXISTS ix_riftbound_card_visits_visit_count
+                ON riftbound_card_visits (visit_count DESC);
             """;
 
         await using var command = dataSource.CreateCommand(sql);
@@ -52,7 +66,6 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             INSERT INTO riftbound_cards (
                 id,
                 name,
-                riftbound_id,
                 public_code,
                 collector_number,
                 set_id,
@@ -62,7 +75,6 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             VALUES (
                 @id,
                 @name,
-                @riftbound_id,
                 @public_code,
                 @collector_number,
                 @set_id,
@@ -71,7 +83,6 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             )
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name,
-                riftbound_id = EXCLUDED.riftbound_id,
                 public_code = EXCLUDED.public_code,
                 collector_number = EXCLUDED.collector_number,
                 set_id = EXCLUDED.set_id,
@@ -89,7 +100,6 @@ public class CardDatabase(NpgsqlDataSource dataSource)
 
             command.Parameters.AddWithValue("id", card.Id);
             command.Parameters.AddWithValue("name", card.Name);
-            command.Parameters.AddWithValue("riftbound_id", card.Id);
             command.Parameters.AddWithValue("public_code", publicCode);
             command.Parameters.AddWithValue("collector_number", card.CollectorNumber);
             command.Parameters.AddWithValue("set_id", card.SetId);
@@ -120,35 +130,39 @@ public class CardDatabase(NpgsqlDataSource dataSource)
 
         if (!string.IsNullOrWhiteSpace(id))
         {
-            filters.Add("id = @id");
+            filters.Add("c.id = @id");
         }
 
         if (!string.IsNullOrWhiteSpace(search))
         {
             filters.Add("""
                 (
-                    name ILIKE @search
-                    OR public_code ILIKE @search
-                    OR riftbound_id ILIKE @search
-                    OR card ->> 'type' ILIKE @search
-                    OR card ->> 'rarity' ILIKE @search
-                    OR card ->> 'faction' ILIKE @search
+                    c.name ILIKE @search
+                    OR c.public_code ILIKE @search
+                    OR c.card ->> 'type' ILIKE @search
+                    OR c.card ->> 'rarity' ILIKE @search
+                    OR c.card ->> 'faction' ILIKE @search
                 )
                 """);
         }
 
         if (!string.IsNullOrWhiteSpace(setId))
         {
-            filters.Add("lower(set_id) = lower(@set_id)");
+            filters.Add("lower(c.set_id) = lower(@set_id)");
         }
 
         var whereClause = filters.Count == 0 ? "" : $"WHERE {string.Join(" AND ", filters)}";
-        var countSql = $"SELECT count(*) FROM riftbound_cards {whereClause};";
+        var countSql = $"SELECT count(*) FROM riftbound_cards c {whereClause};";
         var selectSql = $"""
-            SELECT card::text
-            FROM riftbound_cards
+            SELECT (c.card || jsonb_build_object('visitCount', COALESCE(visits.visit_count, 0)))::text
+            FROM riftbound_cards c
+            LEFT JOIN (
+                SELECT card_id, SUM(visit_count) AS visit_count
+                FROM riftbound_card_visits
+                GROUP BY card_id
+            ) visits ON visits.card_id = c.id
             {whereClause}
-            ORDER BY {sortColumn} {direction}, collector_number ASC, name ASC
+            ORDER BY {sortColumn} {direction}, c.collector_number ASC, c.name ASC
             OFFSET @offset
             LIMIT @limit;
             """;
@@ -166,6 +180,39 @@ public class CardDatabase(NpgsqlDataSource dataSource)
             Size = size,
             Pages = total == 0 ? 0 : (int)Math.Ceiling(total / (double)size)
         };
+    }
+
+    public async Task<bool> RecordVisitAsync(
+        string cardId,
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            INSERT INTO riftbound_card_visits (
+                card_id,
+                user_id,
+                visit_count,
+                first_visited_at,
+                last_visited_at
+            )
+            SELECT
+                id,
+                @user_id,
+                1,
+                now(),
+                now()
+            FROM riftbound_cards
+            WHERE id = @card_id
+            ON CONFLICT (card_id, user_id) DO UPDATE SET
+                visit_count = riftbound_card_visits.visit_count + 1,
+                last_visited_at = now();
+            """;
+
+        await using var command = dataSource.CreateCommand(sql);
+        command.Parameters.AddWithValue("card_id", cardId);
+        command.Parameters.AddWithValue("user_id", userId);
+
+        return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
     }
 
     private static async Task<int> CountCardsAsync(
@@ -258,15 +305,15 @@ public class CardDatabase(NpgsqlDataSource dataSource)
     {
         return sort switch
         {
-            "name" => "name",
-            "public_code" => "public_code",
-            "riftbound_id" => "riftbound_id",
-            "set_id" => "set_id",
-            "collector_number" => "collector_number",
-            "rarity" => "card ->> 'rarity'",
-            "faction" => "card ->> 'faction'",
-            "type" => "card ->> 'type'",
-            _ => "collector_number"
+            "name" => "c.name",
+            "public_code" => "c.public_code",
+            "set_id" => "c.set_id",
+            "collector_number" => "c.collector_number",
+            "rarity" => "c.card ->> 'rarity'",
+            "faction" => "c.card ->> 'faction'",
+            "type" => "c.card ->> 'type'",
+            "visits" => "COALESCE(visits.visit_count, 0)",
+            _ => "c.collector_number"
         };
     }
 

@@ -46,5 +46,39 @@ namespace League_Trader_Temple.Server.Controllers
 
             return Ok(cardPage);
         }
+
+        [HttpPost("{id}/visits", Name = "RiftboundCardVisit")]
+        public async Task<IActionResult> RecordVisit(
+            string id,
+            [FromBody] RiftboundCardVisitRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BadRequest("Card id is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.UserId))
+            {
+                return BadRequest("User id is required.");
+            }
+
+            if (request.UserId.Length > 128)
+            {
+                return BadRequest("User id must be 128 characters or fewer.");
+            }
+
+            var recorded = await cardDatabase.RecordVisitAsync(
+                id.Trim(),
+                request.UserId.Trim(),
+                cancellationToken);
+
+            return recorded ? NoContent() : NotFound();
+        }
+    }
+
+    public class RiftboundCardVisitRequest
+    {
+        public string UserId { get; set; } = "";
     }
 }

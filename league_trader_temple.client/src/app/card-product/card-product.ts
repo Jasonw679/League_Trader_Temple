@@ -11,6 +11,8 @@ import { RiftboundCard, RiftboundCardPage } from '../app';
   styleUrls: ['./card-product.css'],
 })
 export class CardProduct implements OnInit, OnDestroy {
+  private static readonly visitorStorageKey = 'league-trader-temple-user-id';
+
   productId: string | null = null;
   public readonly product = signal<RiftboundCard | null>(null);
   public readonly loading = signal<boolean>(false);
@@ -18,6 +20,7 @@ export class CardProduct implements OnInit, OnDestroy {
 
   private routeSub?: Subscription;
   private fetchSub?: Subscription;
+  private visitSub?: Subscription;
 
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
@@ -42,6 +45,9 @@ export class CardProduct implements OnInit, OnDestroy {
           const product = page.items.length > 0 ? page.items[0] : null;
           this.product.set(product);
           this.error = product ? null : 'Card not found';
+          if (product) {
+            this.recordVisit(product.id);
+          }
           this.loading.set(false);
         },
         error: (err) => {
@@ -51,8 +57,35 @@ export class CardProduct implements OnInit, OnDestroy {
       });
   }
 
+  private recordVisit(cardId: string): void {
+    const userId = this.getOrCreateVisitorId();
+
+    this.visitSub?.unsubscribe();
+    this.visitSub = this.http.post<void>(
+      `/riftboundcards/${encodeURIComponent(cardId)}/visits`,
+      { userId }
+    ).subscribe({
+      error: () => {
+        // Visit tracking should not block card browsing.
+      }
+    });
+  }
+
+  private getOrCreateVisitorId(): string {
+    const existingUserId = localStorage.getItem(CardProduct.visitorStorageKey);
+
+    if (existingUserId) {
+      return existingUserId;
+    }
+
+    const userId = crypto.randomUUID();
+    localStorage.setItem(CardProduct.visitorStorageKey, userId);
+    return userId;
+  }
+
   ngOnDestroy(): void {
     this.routeSub?.unsubscribe();
     this.fetchSub?.unsubscribe();
+    this.visitSub?.unsubscribe();
   }
 }

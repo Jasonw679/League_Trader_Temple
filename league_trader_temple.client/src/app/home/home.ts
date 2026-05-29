@@ -21,7 +21,8 @@ export class Home {
   public loadCards(): void {
     const params: Record<string, string | number> = {
       size: 10,
-      sort: 'collector_number'
+      sort: 'visits',
+      dir: -1
     };
 
     this.isLoadingCards.set(true);

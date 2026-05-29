@@ -27,6 +27,8 @@ namespace League_Trader_Temple.Server
         public string ImageBlurDataUrl { get; set; } = "";
 
         public bool IsBanned { get; set; }
+
+        public int VisitCount { get; set; }
     }
 
     public class RiftboundCardPage
