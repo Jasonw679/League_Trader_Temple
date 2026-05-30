@@ -1,7 +1,9 @@
 <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:8px 16px;">
-  <img alt="League Trader Temple Logo" width="400" height="40" style="object-fit:contain;">
+  <a href="/">
+    <img src="League Trader Temple.png" alt="League Trader Temple Logo" style="width:100px; height:100px; object-fit:contain;">
+  </a>
   <form class="search-form" (submit)="$event.preventDefault(); searchCards()">
-    <label for="card-search">Search cards</label>
+    <label for="card-search">Search cards</label>   
     <div class="search-row">
       <input id="card-search"
              type="search"
