@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing-module';
@@ -12,10 +13,22 @@ import { Search } from './search/search';
 import { NotFound } from './not-found/not-found';
 import { CardProduct } from './card-product/card-product';
 import { ShoppingCart } from './shopping-cart/shopping-cart';
+import { Login } from './login/login';
 
 @NgModule({
-  declarations: [App, Header, Footer, Home, Search, Card, NotFound, CardProduct, ShoppingCart],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule],
+  declarations: [
+    App,
+    Header,
+    Footer,
+    Home,
+    Search,
+    Card,
+    NotFound,
+    CardProduct,
+    ShoppingCart,
+    Login,
+  ],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
 })

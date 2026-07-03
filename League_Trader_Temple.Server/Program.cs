@@ -19,7 +19,9 @@ builder.Services.AddSingleton(sp =>
     return new NpgsqlDataSourceBuilder(connectionString).Build();
 });
 builder.Services.AddSingleton<CardDatabase>();
+builder.Services.AddSingleton<AccountDatabase>();
 builder.Services.AddHostedService<RiftcodexCardSyncService>();
+builder.Services.AddHostedService<AccountService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

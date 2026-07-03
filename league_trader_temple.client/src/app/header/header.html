@@ -17,8 +17,20 @@
     <a href="/shoppingcart">
       <img src="Cart.png" alt="Shopping Cart" />
     </a>
-    <span style="font-size:14px; color:#fff; text-align:right;">Account (coming soon)</span>
- </div>
+
+    <span *ngIf="!auth.isLoggedIn()">
+      <a href="/login" role="button" style="background: #000; color:#fff; padding:6px 12px; font-size:14px; cursor:pointer;">
+        Login
+      </a>
+      <span style="font-size:14px; color:#fff; text-align:right;">Create an Account (coming soon)</span>
+    </span>
+    <span *ngIf="auth.currentUser$ | async as currentUser">
+      Welcome {{ currentUser.username }}
+      <a (click)="auth.logout()">
+        Logout
+      </a>
+    </span>
+  </div>
   
 </div>
 

@@ -4,6 +4,7 @@ import { Home } from './home/home';
 import { CardProduct } from './card-product/card-product';
 import { Search } from './search/search';
 import { ShoppingCart } from './shopping-cart/shopping-cart';
+import { Login } from './login/login';
 import { NotFound } from './not-found/not-found';
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'card/:id', component: CardProduct },
   { path: 'search', component: Search },
   { path: 'shoppingcart', component: ShoppingCart },
+  { path: 'login', component: Login },
   { path: '**', component: NotFound }
 ];
 

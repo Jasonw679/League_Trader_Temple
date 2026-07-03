@@ -44,6 +44,7 @@ export interface RiftboundCardImageThumb {
   styleUrl: './app.css'
 })
 export class App{
+  loginId = '';
   constructor(private router: Router) {}
 
   loadCards(search = ''): void {
