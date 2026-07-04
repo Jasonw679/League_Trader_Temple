@@ -1,4 +1,4 @@
-<form (ngSubmit)="onLoginSubmit($event)">
+<form (ngSubmit)="onLoginSubmit()">
   <div *ngIf="errorMessage != ''" style="color: red;">
     {{errorMessage}}
   </div>
@@ -21,3 +21,8 @@
   </div>
   <button type="submit">Login</button>
 </form>
+<div>
+  <a routerLink="/create-account">
+    Create an Account
+  </a>
+</div>

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth-service';
+import { AuthService } from '../Injectable/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,13 @@ export class Login {
   public errorMessage: string = '';
   constructor(private http: HttpClient, private router: Router, private authService: AuthService) { }
 
-  public onLoginSubmit(event: Event): void {
+  ngOnInit() {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+    }
+  }
+
+  public onLoginSubmit(): void {
 
     this.errorMessage = '';
     this.http.post<{
@@ -24,8 +30,7 @@ export class Login {
         id: number;
         username: string;
       };
-}>(
-        `/account`,
+    }>(`/Account/login`,
         {
           username: this.username,
           password: this.password
@@ -39,11 +44,11 @@ export class Login {
             this.router.navigate(['/']);
           } else {
             alert('Invalid username or password.');
-            this.router.navigate(['/login']);
+            this.router.navigate(['login']);
           }
         },
-        error: () => {
-          alert(this.errorMessage = 'Unable to connect to the server.');
+        error: (err) => {
+          alert(err.error);
         },
       });
   }

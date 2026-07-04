@@ -14,6 +14,7 @@ import { NotFound } from './not-found/not-found';
 import { CardProduct } from './card-product/card-product';
 import { ShoppingCart } from './shopping-cart/shopping-cart';
 import { Login } from './login/login';
+import { CreateAnAccount } from './create-an-account/create-an-account';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { Login } from './login/login';
     CardProduct,
     ShoppingCart,
     Login,
+    CreateAnAccount,
   ],
   imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners()],

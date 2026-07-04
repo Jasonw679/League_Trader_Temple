@@ -1,0 +1,44 @@
+<p>
+  This website is currently in beta testing.
+
+  By creating an account, you acknowledge and agree to the following:
+
+  Your account and all associated data may be deleted at any time during the beta period without prior notice.
+  Do not use a username, email, or password from any other website or online service.
+  Create a new, unique password exclusively for this beta site to help protect your other accounts.
+  Features, content, and account data may change, reset, or be removed as testing continues.
+  This website is intended for testing purposes only and may contain bugs, errors, or unexpected behavior.
+
+  If you are not comfortable with these conditions, please do not create an account.
+</p>
+<form (ngSubmit)="OnSubmit()">
+  <div *ngIf="errorMessage != ''" style="color: red;">
+    {{errorMessage}}
+  </div>
+  <div>
+    <label>New Username:</label>
+    <input type="text"
+           id="username"
+           name="username"
+           [(ngModel)]="username"
+           required />
+  </div>
+
+  <div>
+    <label>New Password:</label>
+    <input type="password"
+           id="password"
+           name="password"
+           [(ngModel)]="password"
+           required />
+  </div>
+  <div>
+    <label>Confirm New Password:</label>
+    <input type="password"
+           id="password"
+           name="confirmPassword"
+           [(ngModel)]="confirmPassword"
+           required />
+  </div>
+  <button type="submit">Create an Account</button>
+</form>

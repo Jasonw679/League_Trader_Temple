@@ -25,7 +25,8 @@ const PROXY_CONFIG = [
   {
     context: [
       "/riftboundcards",
-      "/account",
+      "/Account/login",
+      "/Account/register"
     ],
     target,
     secure: false,

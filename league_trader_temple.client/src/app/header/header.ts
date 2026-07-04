@@ -1,5 +1,5 @@
 import { Component, signal, Output, EventEmitter } from '@angular/core';
-import { AuthService } from '../auth-service';
+import { AuthService } from '../Injectable/auth-service';
 
 @Component({
   selector: 'app-header',

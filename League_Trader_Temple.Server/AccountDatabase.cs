@@ -2,16 +2,9 @@
 
 namespace League_Trader_Temple.Server
 {
-    public class AccountDatabase
+    public class AccountDatabase(NpgsqlDataSource dataSource)
     {
-        private readonly NpgsqlDataSource dataSource;
-        private readonly IConfiguration configuration;
-
-        public AccountDatabase(NpgsqlDataSource dataSource, IConfiguration configuration)
-        {
-            this.dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        }
+        private readonly NpgsqlDataSource dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
         public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
@@ -19,7 +12,7 @@ namespace League_Trader_Temple.Server
             CREATE TABLE IF NOT EXISTS account(
                 id text PRIMARY KEY,
                 name text NOT NULL,
-                username text NOT NULL,
+                username text NOT NULL UNIQUE,
                 email text NOT NULL,
                 password_hash text NOT NULL,
                 created_at timestamp with time zone NOT NULL DEFAULT now()

@@ -4,17 +4,12 @@ using Npgsql;
 namespace League_Trader_Temple.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class AccountController : ControllerBase
+    [Route("Account")]
+    public class AccountController(NpgsqlDataSource dataSource) : ControllerBase
     {
-        private readonly NpgsqlDataSource _dataSource;
+        private readonly NpgsqlDataSource _dataSource = dataSource;
 
-        public AccountController(NpgsqlDataSource dataSource)
-        {
-            _dataSource = dataSource;
-        }
-
-        [HttpPost(Name = "account")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Account account)
         {
             if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Password))
@@ -50,6 +45,36 @@ namespace League_Trader_Temple.Server.Controllers
                 exists = true,
                 user
             });
+        }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] Account account)
+        {
+            if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Password))
+            {
+                return BadRequest("Username and password are required.");
+            }
+            const string sql = @"INSERT INTO account (id, name, username, email, password_hash)
+            VALUES (@id, @username, @username, @username, @password);
+            ";
+            await using var cmd = _dataSource.CreateCommand(sql);
+            var id = Guid.NewGuid().ToString();
+            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("username", account.Username.Trim());
+            cmd.Parameters.AddWithValue("password", account.Password);
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+                var user = new
+                {
+                    id,
+                    username = account.Username
+                };
+                return Ok(new { success = true, user });
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23505") // unique_violation
+            {
+                return Conflict(new { success = false, message = "Username already exists." });
+            }
         }
     }
 }
